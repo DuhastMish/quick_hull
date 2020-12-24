@@ -2,7 +2,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
 
-
 DATA_PATH = Path('data.txt')
 
 
