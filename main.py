@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
+from math import sqrt
 
 DATA_PATH = Path('data.txt')
 
@@ -20,6 +21,12 @@ def determine_position_from_line(line_point_left: Tuple,
     return (px-lx)*(ry-ly) - (py-ly)*(rx-lx)
 
 
+def distance_between_points(first_point, second_point):
+    fx, fy = first_point
+    sx, sy = second_point
+    return sqrt((sy-fy)**2 + (sx-fx)**2)
+
+
 def sign(side_1: int, side_2: int) -> bool:
     if side_1 > 0 and side_2 > 0:
         return True
@@ -29,6 +36,10 @@ def sign(side_1: int, side_2: int) -> bool:
         return True
     else:
         return False
+
+
+def distance_from_point_to_line():
+    pass
 
 
 def build_quick_hull(points: List[Tuple]):
@@ -46,6 +57,19 @@ def build_quick_hull(points: List[Tuple]):
 
         return ((int(minimal_x), int(minimal_y)), (maximal_x, maximal_y))
 
+    def find_hull_point(points: List[Tuple], left_point: Tuple, right_point: Tuple):
+        hulls = []
+        default_distance = float('-inf')
+        line_length = distance_between_points(left_point, right_point)
+        for point in points:
+            # dist_point_to_line = distance_from_point_to_line()
+            # default_distance = max(dist_point_to_line, default_distance)
+            # if default_distance == dist_point_to_line:
+            #     hull_point = point
+            pass
+        # hulls.append(hull_point)
+        import pdb; pdb.set_trace()
+
     upper_set = []
     bottom_set = []
     sorted_points = points.sort(key=lambda x: (x[0], x[1]))
@@ -62,7 +86,10 @@ def build_quick_hull(points: List[Tuple]):
             else:
                 bottom_set.append(point)
 
-    return upper_set, bottom_set
+    if upper_set:
+        find_hull_point(upper_set, left_point, right_point)
+    if bottom_set:
+        find_hull_point(bottom_set, left_point, right_point)
 
 
 def quick_hull():
