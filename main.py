@@ -38,8 +38,9 @@ def sign(side_1: int, side_2: int) -> bool:
         return False
 
 
-def distance_from_point_to_line():
-    pass
+def distance_from_point_to_line(orientation: int,
+                                distance: int):
+    return abs(orientation) / distance
 
 
 def build_quick_hull(points: List[Tuple]):
@@ -62,12 +63,17 @@ def build_quick_hull(points: List[Tuple]):
         default_distance = float('-inf')
         line_length = distance_between_points(left_point, right_point)
         for point in points:
-            # dist_point_to_line = distance_from_point_to_line()
-            # default_distance = max(dist_point_to_line, default_distance)
-            # if default_distance == dist_point_to_line:
-            #     hull_point = point
+            point_orientation = determine_position_from_line(left_point, right_point, point)
+            dist_point_to_line = distance_from_point_to_line(point_orientation, line_length)
+            default_distance = max(dist_point_to_line, default_distance)
+            if default_distance == dist_point_to_line:
+                hull_point = point
             pass
-        # hulls.append(hull_point)
+        hulls.append(hull_point)
+
+        upper_point_orientation = determine_position_from_line(left_point, hull_point, right_point)
+        bottom_point_orientation = determine_position_from_line(hull_point, right_point, left_point)
+
         import pdb; pdb.set_trace()
 
     upper_set = []
