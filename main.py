@@ -1,7 +1,8 @@
 from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
-import numpy as np
+
+
 DATA_PATH = Path('data.txt')
 
 
@@ -18,6 +19,17 @@ def determine_position_from_line(line_point_left: Tuple,
     rx, ry = line_point_right
     px, py = point
     return (px-lx)*(ry-ly) - (py-ly)*(rx-lx)
+
+
+def sign(side_1: int, side_2: int) -> bool:
+    if side_1 > 0 and side_2 > 0:
+        return True
+    elif side_1 < 0 and side_2 < 0:
+        return True
+    elif side_1 == side_2:
+        return True
+    else:
+        return False
 
 
 def build_quick_hull(points: List[Tuple]):
@@ -46,7 +58,7 @@ def build_quick_hull(points: List[Tuple]):
     for point in points:
         if point not in [left_point, right_point]:
             side_of_line = determine_position_from_line(left_point, right_point, point)
-            if np.sign(side_of_line) == np.sign(upper_side_of_line):
+            if sign(side_of_line, upper_side_of_line):
                 upper_set.append(point)
             else:
                 bottom_set.append(point)
