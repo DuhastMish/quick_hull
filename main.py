@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple, List
+from typing import List, Tuple
 
 DATA_PATH = Path('data.txt')
 
@@ -10,7 +10,7 @@ def read_data_file() -> List:
     return points_list
 
 
-def get_left_and_right_points(points_list: List) -> Tuple[Tuple]:
+def get_left_and_right_points(points_list: List) -> Tuple[Tuple[int, int], Tuple[int, int]]:
     minimal_x = minimal_y = float('inf')
     maximal_x = maximal_y = 0
     for point in points_list:
@@ -22,7 +22,8 @@ def get_left_and_right_points(points_list: List) -> Tuple[Tuple]:
             maximal_x = coord_x
             maximal_y = coord_y
 
-    return ((minimal_x, minimal_y), (maximal_x, maximal_y))
+    return ((int(minimal_x), int(minimal_y)), (maximal_x, maximal_y))
+
 
 def quick_hull():
     points = read_data_file()
