@@ -28,11 +28,7 @@ def distance_between_points(first_point, second_point):
 
 
 def sign(side_1: int, side_2: int) -> bool:
-    if side_1 > 0 and side_2 > 0:
-        return True
-    elif side_1 < 0 and side_2 < 0:
-        return True
-    elif side_1 == side_2:
+    if (side_1 > 0 and side_2 > 0) or (side_1 < 0 and side_2 < 0) or (side_1 == side_2):
         return True
     else:
         return False
@@ -70,15 +66,32 @@ def build_quick_hull(points: List[Tuple]):
                 hull_point = point
             pass
         hulls.append(hull_point)
-
+        upper_set = []
+        buttom_set = []
         upper_point_orientation = determine_position_from_line(left_point, hull_point, right_point)
         bottom_point_orientation = determine_position_from_line(hull_point, right_point, left_point)
+        for point in points:
+            if point not in hulls:
+                if not sign(determine_position_from_line(left_point, hull_point, point),
+                            upper_point_orientation):
+                    upper_set.append(point)
+                if not sign(determine_position_from_line(hull_point, right_point, point),
+                            bottom_point_orientation):
+                    buttom_set.append(point)
+        if upper_set:
+            up_set = find_hull_point(upper_set, left_point, hull_point)
+        else:
+            up_set = []
+        if bottom_set:
+            bot_set = find_hull_point(buttom_set, hull_point, right_point)
+        else:
+            bot_set = []
 
-        import pdb; pdb.set_trace()
+        return hulls + bot_set + up_set
 
     upper_set = []
     bottom_set = []
-    sorted_points = points.sort(key=lambda x: (x[0], x[1]))
+    points.sort(key=lambda x: (x[0], x[1]))
     left_point, right_point = get_left_and_right_points(points)
     x, y = left_point
     upper_left_point = (x, y+1)
@@ -93,17 +106,17 @@ def build_quick_hull(points: List[Tuple]):
                 bottom_set.append(point)
 
     if upper_set:
-        find_hull_point(upper_set, left_point, right_point)
+        upper_set = find_hull_point(upper_set, left_point, right_point)
     if bottom_set:
-        find_hull_point(bottom_set, left_point, right_point)
+        bottom_set = find_hull_point(bottom_set, left_point, right_point)
+    return left_point, right_point, upper_set, bottom_set
 
 
 def quick_hull():
     points = read_data_file()
     start_time = datetime.now()
 
-    build_quick_hull(points)
-
+    left_point, right_point, upper_set, bottom_set = build_quick_hull(points)
     end_time = datetime.now()
     print(f"Estimated time: {end_time - start_time} msc.")
 
