@@ -112,13 +112,34 @@ def build_quick_hull(points: List[Tuple]):
     return left_point, right_point, upper_set, bottom_set
 
 
+def make_indexies(points: List[Tuple]):
+    indexies = {}
+    index = 0
+    for point in points:
+        indexies[point] = index
+        index += 1
+    return indexies
+
+
 def quick_hull():
     points = read_data_file()
+    indexies = make_indexies(points)
     start_time = datetime.now()
 
     left_point, right_point, upper_set, bottom_set = build_quick_hull(points)
-    end_time = datetime.now()
-    print(f"Estimated time: {end_time - start_time} msc.")
+    print(f"Estimated time: {datetime.now() - start_time} msc.")
+
+    result = []
+    result.append(left_point)
+    result.extend(upper_set)
+    result.extend(bottom_set)
+    result.append(right_point)
+    print("Result:")
+    for res_index, res_point in enumerate(result):
+        try:
+            print(f"{indexies[res_point]} - {indexies[result[res_index + 1]]}")
+        except IndexError:
+            print(f"{indexies[res_point]} - {indexies[result[0]]}")
 
 
 if __name__ == "__main__":
