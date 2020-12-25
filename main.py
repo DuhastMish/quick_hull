@@ -1,7 +1,7 @@
 from datetime import datetime
+from math import sqrt
 from pathlib import Path
 from typing import List, Tuple
-from math import sqrt
 
 DATA_PATH = Path('data.txt')
 
@@ -54,7 +54,7 @@ def build_quick_hull(points: List[Tuple]):
 
         return ((int(minimal_x), int(minimal_y)), (maximal_x, maximal_y))
 
-    def find_hull_point(points: List[Tuple], left_point: Tuple, right_point: Tuple):
+    def find_hull_point(points: List[Tuple], left_point: Tuple, right_point: Tuple) -> List:
         hulls = []
         default_distance = float('-inf')
         line_length = distance_between_points(left_point, right_point)
