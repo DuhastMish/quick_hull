@@ -1,5 +1,5 @@
 from datetime import datetime
-from math import sqrt, atan2
+from math import atan2, sqrt
 from pathlib import Path
 from typing import List, Tuple
 
