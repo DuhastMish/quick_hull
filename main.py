@@ -40,49 +40,45 @@ def distance_from_point_to_line(orientation: int,
 
 
 def build_quick_hull(points: List[Tuple]):
-    def get_left_and_right_points(points_list: List) -> Tuple[Tuple[int, int], Tuple[int, int]]:
-        minimal_x = minimal_y = float('inf')
-        maximal_x = maximal_y = 0
-        for point in points_list:
-            coord_x, coord_y = point
-            if coord_x < minimal_x:
-                minimal_x = coord_x
-                minimal_y = coord_y
-            if coord_x > maximal_y:
-                maximal_x = coord_x
-                maximal_y = coord_y
-
-        return ((int(minimal_x), int(minimal_y)), (maximal_x, maximal_y))
-
     def find_hull_point(points: List[Tuple], left_point: Tuple, right_point: Tuple) -> List:
         if points:
             hulls = []
+            hull_point = None
             default_distance = float('-inf')
             line_length = distance_between_points(left_point, right_point)
             for point in points:
                 point_orientation = determine_position_from_line(left_point, right_point, point)
                 dist_point_to_line = distance_from_point_to_line(point_orientation, line_length)
+                if dist_point_to_line == 0:
+                    continue
                 default_distance = max(dist_point_to_line, default_distance)
                 if default_distance == dist_point_to_line:
                     hull_point = point
-            hulls.append(hull_point)
+            if hull_point:
+                hulls.append(hull_point)
+                upper_set = []
+                bottom_set = []
+                upper_point_orientation = determine_position_from_line(left_point, hull_point, right_point)
+                bottom_point_orientation = determine_position_from_line(hull_point, right_point, left_point)
 
-            upper_set = []
-            bottom_set = []
-            upper_point_orientation = determine_position_from_line(left_point, hull_point, right_point)
-            bottom_point_orientation = determine_position_from_line(hull_point, right_point, left_point)
-            for point in points:
-                if point not in hulls:
-                    if not sign(determine_position_from_line(left_point, hull_point, point),
-                                upper_point_orientation):
-                        upper_set.append(point)
-                    elif sign(determine_position_from_line(hull_point, right_point, point),
-                              bottom_point_orientation):
-                        bottom_set.append(point)
-            up_set = find_hull_point(upper_set, left_point, hull_point)
-            bot_set = find_hull_point(bottom_set, hull_point, right_point)
+                for point in points:
+                    if point not in hulls:
+                        if (not sign(determine_position_from_line(left_point, hull_point, point),
+                                     upper_point_orientation)
+                                and determine_position_from_line(left_point, hull_point, point) != 0):
+                            upper_set.append(point)
 
-            return hulls + bot_set + up_set
+                        if (not sign(determine_position_from_line(hull_point, right_point, point),
+                                     bottom_point_orientation)
+                                and determine_position_from_line(hull_point, right_point, point) != 0):
+                            bottom_set.append(point)
+
+                up_set = find_hull_point(upper_set, left_point, hull_point)
+                bot_set = find_hull_point(bottom_set, hull_point, right_point)
+
+                return hulls + bot_set + up_set
+            else:
+                return []
         else:
             return []
 
@@ -97,7 +93,7 @@ def build_quick_hull(points: List[Tuple]):
     for point in points:
         if point not in [left_point, right_point]:
             side_of_line = determine_position_from_line(left_point, right_point, point)
-            if sign(side_of_line, upper_side_of_line):
+            if sign(side_of_line, upper_side_of_line) and side_of_line != 0:
                 upper_set.append(point)
             else:
                 bottom_set.append(point)
@@ -109,18 +105,18 @@ def build_quick_hull(points: List[Tuple]):
     return left_point, right_point, upper_set, bottom_set
 
 
-def make_indexies(points: List[Tuple]):
-    indexies = {}
+def make_indexes(points: List[Tuple]):
+    indexes = {}
     index = 0
     for point in points:
-        indexies[point] = index
+        indexes[point] = index
         index += 1
-    return indexies
+    return indexes
 
 
 def quick_hull():
     points = read_data_file()
-    indexies = make_indexies(points)
+    indexes = make_indexes(points)
     start_time = datetime.now()
 
     left_point, right_point, upper_set, bottom_set = build_quick_hull(points)
@@ -143,9 +139,9 @@ def quick_hull():
     for res_index, res_point in enumerate(result):
         try:
             if res_point != result[res_index + 1]:
-                print(f"{indexies[res_point]} - {indexies[result[res_index + 1]]}")
+                print(f"{indexes[res_point]} - {indexes[result[res_index + 1]]}")
         except IndexError:
-            print(f"{indexies[res_point]} - {indexies[result[0]]}")
+            print(f"{indexes[res_point]} - {indexes[result[0]]}")
 
 
 if __name__ == "__main__":
