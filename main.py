@@ -76,8 +76,8 @@ def build_quick_hull(points: List[Tuple]):
                     if not sign(determine_position_from_line(left_point, hull_point, point),
                                 upper_point_orientation):
                         upper_set.append(point)
-                    if not sign(determine_position_from_line(hull_point, right_point, point),
-                                bottom_point_orientation):
+                    elif sign(determine_position_from_line(hull_point, right_point, point),
+                              bottom_point_orientation):
                         bottom_set.append(point)
             up_set = find_hull_point(upper_set, left_point, hull_point)
             bot_set = find_hull_point(bottom_set, hull_point, right_point)
