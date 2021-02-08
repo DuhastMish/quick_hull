@@ -1,12 +1,17 @@
 from datetime import datetime
 from math import atan2, sqrt
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 DATA_PATH = Path('data.txt')
 
 
-def read_data_file() -> List:
+def read_data_file() -> List[Tuple[int, int]]:
+    """Reading points from a file.
+
+    Returns:
+        List[Tuple[int, int]]: List of points, e.g. [(x,y)]
+    """
     points = DATA_PATH.read_text().strip().split('\n')
     points_list = [eval(triangle) for triangle in points]
     return points_list
@@ -14,14 +19,37 @@ def read_data_file() -> List:
 
 def determine_position_from_line(line_point_left: Tuple,
                                  line_point_right: Tuple,
-                                 point: Tuple):
+                                 point: Tuple) -> int:
+    """Determine the position of a point,
+    relative to the first two that form a straight line.
+
+    Args:
+        line_point_left (Tuple): Left point of the straight line
+        line_point_right (Tuple): Right point of a straight line
+        point (Tuple): Point to determine position
+
+    Returns:
+        int: Returns a number:
+            if negative, then the point lies on the left,
+            if positive, then on the right,
+            if zero, then on a straight line
+    """
     lx, ly = line_point_left
     rx, ry = line_point_right
     px, py = point
     return (px-lx)*(ry-ly) - (py-ly)*(rx-lx)
 
 
-def distance_between_points(first_point, second_point):
+def distance_between_points(first_point: Tuple, second_point: Tuple) -> float:
+    """Return the distance between points
+
+    Args:
+        first_point (Tuple): First point
+        second_point (Tuple): Second point
+
+    Returns:
+        float: Distance
+    """
     fx, fy = first_point
     sx, sy = second_point
     return sqrt((sy-fy)**2 + (sx-fx)**2)
@@ -35,12 +63,39 @@ def sign(side_1: int, side_2: int) -> bool:
 
 
 def distance_from_point_to_line(orientation: int,
-                                distance: int):
+                                distance: int) -> float:
+    """Distance from point to line
+
+    Args:
+        orientation (int): Point position
+        distance (int): Distance
+
+    Returns:
+        float: Distance
+    """
     return abs(orientation) / distance
 
 
-def build_quick_hull(points: List[Tuple]):
+def build_quick_hull(points: List[Tuple]) -> Tuple:
+    """Builds a quick hull.
+
+    Args:
+        points (List[Tuple]): Point List
+
+    Returns:
+        Tuple: Returns the (leftmost, rightmost, top point sets, bottom point sets).
+    """
     def find_hull_point(points: List[Tuple], left_point: Tuple, right_point: Tuple) -> List:
+        """Returns a list of points that belong to the top/bot shell
+
+        Args:
+            points (List[Tuple]): Point.
+            left_point (Tuple): Left point of the line.
+            right_point (Tuple): Right point of the line.
+
+        Returns:
+            List: Point List
+        """
         if points:
             hulls = []
             hull_point = None
@@ -105,7 +160,15 @@ def build_quick_hull(points: List[Tuple]):
     return left_point, right_point, upper_set, bottom_set
 
 
-def make_indexes(points: List[Tuple]):
+def make_indexes(points: List[Tuple]) -> Dict[Tuple, int]:
+    """Specifies indices for original points
+
+    Args:
+        points (List[Tuple]): Points list
+
+    Returns:
+        Dict[Tuple, int]: Dictionary, where the key is the coordinates of the points, and the value is its index.
+    """
     indexes = {}
     index = 0
     for point in points:
@@ -115,6 +178,7 @@ def make_indexes(points: List[Tuple]):
 
 
 def quick_hull():
+    """Builds a quick hull."""
     points = read_data_file()
     indexes = make_indexes(points)
     start_time = datetime.now()
